@@ -1,25 +1,36 @@
 import { X } from "lucide-react";
 import { useState } from "react";
+import { getGeoLocation } from "../services/get-geolocation";
 
-function LocationModal({ onClose }) {
+const LocationModal = ({ onClose })=>{
   const [city, setCity] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const value = city.trim();
+    try {
+    const result = await getGeoLocation(value);
+    console.log(result)
+    } catch (error) {
+      console.log(error)
+    }
   };
 
-const handleGeoLocation= ()=>{
-navigator.geolocation.getCurrentPosition((positions)=>{
-  const {latitude,longitude} = positions.coords;
-console.log(latitude,longitude)
-},(error)=>{
-console.log(error)
-},{
-  timeout : 10000
-}
-)
-}
-
+  const handleGeoLocation = () => {
+    navigator.geolocation.getCurrentPosition(
+      (positions) => {
+        const { latitude, longitude } = positions.coords;
+        console.log(latitude, longitude);
+      },
+      (error) => {
+        console.log(error);
+      },
+      {
+        timeout: 10000,
+      },
+    );
+  };
   return (
     <div className="fixed inset-0 flex justify-center items-center bg-gray-950/60">
       <div className="h-75 p-5 w-100 rounded-2xl bg-gray-100 shadow-2xl">
@@ -49,8 +60,10 @@ console.log(error)
         </div>
         <div className="flex justify-center font-extrabold">or</div>
         <div className="">
-          <button type="button" className="btn btn-primary w-full"
-          onClick={handleGeoLocation}
+          <button
+            type="button"
+            className="btn btn-primary w-full"
+            onClick={handleGeoLocation}
           >
             use my location
           </button>
